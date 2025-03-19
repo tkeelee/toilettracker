@@ -23,7 +23,16 @@ public class DatabaseManager {
                     ")";
             stmt.execute(sql);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize database", e);
+        }
+    }
+
+    public void clearDatabase() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM records");
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to clear database", e);
         }
     }
 
@@ -38,7 +47,7 @@ public class DatabaseManager {
             pstmt.setLong(3, duration);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to save record", e);
         }
     }
 
@@ -59,7 +68,7 @@ public class DatabaseManager {
                 stats.put(rs.getString("month"), rs.getDouble("avg_duration"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get monthly stats", e);
         }
         return stats;
     }
